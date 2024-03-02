@@ -5,6 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CHAT EN TIEMPO REAL</title>
 
+  <script type="module">
+    // CLIENTE
+      import {io} from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js' // vanilla JS
+
+      const socket = io()
+      const form = document.getElementById("form")
+      const input = document.getElementById("input")
+      const messages = document.getElementById("messages")
+
+    socket.on ("chat message", (msg)=>{
+      const item =  `<li>${msg}<li/>`
+        messages.insertAdjacentHTML("beforeend", item) 
+    })
+
+      form.addEventListener("submit", (e)=>{
+          e.preventDefault()
+          if (input.value){
+            socket.emit("chat message", input.value);
+            input.value = ""
+          }
+      })
+
+  </script>  
   <style>
     *, 
     *::before,
@@ -12,9 +35,27 @@
       box-sizing: border-box;
     }
 
+     #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow-y: scroll;
+      height: 100%;
+      scroll-behavior: smooth;
+      padding-bottom: 48px;
+    }
+
+    #messages>li {
+      padding: 0.2rem 0.2rem;
+    }
+
+    #messages>li:nth-child(odd) {
+      background: #dfdbdb;
+    }
+
     body{
       margin: 0;
-      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
       display: grid;
       place-content: center;
       height: 100vh;
@@ -24,22 +65,55 @@
 
     #chat{
       border: 1px solid rgb(107, 96, 92);
-      border-radius: 4px;    
+      border-radius: 2px;    
       overflow: hidden;
       width: 350px;
       height: 100%;
       position: relative;
     }
+
+     #form {
+      bottom: 0;
+      display: flex;
+      height: 48px;
+      left: 0;
+      padding: 2px;
+      position: absolute;
+      right: 0;
+    }
+
+    #input {
+      border-radius: 9999px;
+      border: 1px solid #8d8585;
+      flex: 1;
+      margin: 2px;
+      padding: 0 8px;
+    }
+
+    #input:focus {
+      outline: 0;
+    }
+
+    #form>button {
+      background: rgb(76, 147, 194);
+      color: #f0e5e5;
+      border: 0;
+      margin: 4px;
+      border-radius: 4px;
+    }
+
+    #form>button:hover {
+      background: #0cf;
+    }
     </style>
 </head>
 <body>
   <section id="chat">
-    <form action="">
-
-      
+    <ul id="messages"></ul>
+    <form id="form">
+      <input type="text" name="message" id="input" placeholder="Type a message" autocomplete="off" />
+      <button type="submit">Enviar</button>
     </form>
-
-
   </section>
 </body>
 </html>
